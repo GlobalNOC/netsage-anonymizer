@@ -1,0 +1,4 @@
+! see https://github.com/pmacct/pmacct/blob/master/examples/pretag.map.example
+
+! Set the sensor name as the label (arbitrary string tag)
+set_label=docker

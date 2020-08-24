@@ -1,0 +1,53 @@
+version: "3.7"
+services:
+  ##Legacy Pattern
+  sflow-collector:
+    image: netsage/nfdump-collector:1.6.18
+    restart: always
+    command: sfcapd -T all -l /data -S 1 -w -z -p 9998
+    volumes:
+      - ./data/input_data/sflow:/data
+    ports:
+      - "9998:9998/udp"
+  netflow-collector:
+    image: netsage/nfdump-collector:1.6.18
+    command: nfcapd -T all -l /data -S 1 -w -z -p 9999
+    ports:
+      - "9999:9999/udp"
+    restart: always
+    volumes:
+      - ./data/input_data/netflow:/data
+  importer:
+    image: netsage/pipeline_importer:latest
+    build:
+      context: .
+      dockerfile: compose/pipeline/Dockerfile
+    env_file: .env
+    # depends_on:
+    # - rabbit
+    restart: always
+    volumes:
+      - ./data:/data
+    #      - ./userConfig/netsage_override.xml:/etc/grnoc/netsage/deidentifier/netsage_shared.xml
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.dataUpdate.schedule: "@every 24h"
+      ofelia.job-exec.dataUpdate.command: "/tmp/docker_init.sh"
+  ## End Legacy
+  filebeat: ## Replacement for importer + collector
+    image: netsage/pipeline_filebeat:latest
+    env_file: .env
+    volumes:
+      - ./compose/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+  #    ports:
+  #     - "9999:9999/udp" ## netflow collector
+  nfacctd:
+    image: pmacct/nfacctd:v1.7.5
+    restart: on-failure
+    ports:
+      - "9996:9996/udp"
+      - "179:179"
+    volumes:
+      - ./conf-nfacctd/nfacctd.conf:/etc/pmacct/nfacctd.conf
+      - ./conf-nfacctd/pretag.map:/etc/pmacct/pretag.map
+      - ./conf-nfacctd/ipfix.primitives.lst:/etc/pmacct/ipfix.primitives.ls
