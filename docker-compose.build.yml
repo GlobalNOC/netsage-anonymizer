@@ -10,3 +10,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/logstash/Dockerfile
+  rabbit:
+    image: netsage/rabbitmq:3-management
+    build:
+      context: .
+      dockerfile: ./compose/rabbit/Dockerfile
