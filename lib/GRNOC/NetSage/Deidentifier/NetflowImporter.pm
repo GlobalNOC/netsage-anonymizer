@@ -469,16 +469,16 @@ sub _get_nfdump_data {
             }
 
             my $row = {};
-            $row->{'type'} = 'flow';
-            $row->{'interval'} = 600;
-            $row->{'meta'} = {};
-            $row->{'meta'}->{'flow_type'} = $flow_type || 'netflow';
-            $row->{'meta'}->{'src_ip'} = $sa;
-            $row->{'meta'}->{'src_port'} = $sp;
-            $row->{'meta'}->{'dst_ip'} = $da;
-            $row->{'meta'}->{'dst_port'} = $dp;
-            $row->{'meta'}->{'protocol'} = $proto;
-            $row->{'meta'}->{'sensor_id'} = $sensor;
+            # $row->{'type'} = 'flow';
+            # $row->{'interval'} = 600;
+            # $row->{'meta'} = {};
+            # $row->{'meta'}->{'flow_type'} = $flow_type || 'netflow';
+            # $row->{'meta'}->{'src_ip'} = $sa;
+            # $row->{'meta'}->{'src_port'} = $sp;
+            # $row->{'meta'}->{'dst_ip'} = $da;
+            # $row->{'meta'}->{'dst_port'} = $dp;
+            # $row->{'meta'}->{'protocol'} = $proto;
+            # $row->{'meta'}->{'sensor_id'} = $sensor;
             $row->{'meta'}->{'instance_id'} = $instance if $instance ne '';
             $row->{'meta'}->{'src_asn'} = $sas;
             $row->{'meta'}->{'dst_asn'} = $das;

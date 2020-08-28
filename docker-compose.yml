@@ -1,5 +1,6 @@
 version: "3.7"
 services:
+
   rabbit:
     image: netsage/rabbitmq:3-management
     env_file: .env
@@ -26,10 +27,10 @@ services:
   logstash:
     image: netsage/pipeline_logstash:latest
     env_file: .env
-    depends_on:
-      - importer
-    ports:
-      - "5044:5044"
+    external_links:
+      - rabbit
+    # ports:
+    #   - "5044:5044"
     volumes:
       - ./conf-logstash:/usr/share/logstash/pipeline/
       - ./data:/data
@@ -38,6 +39,6 @@ services:
     image: mcuadros/ofelia:v0.3.0
     command: daemon --docker
     depends_on:
-      - importer
+      - logstash
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

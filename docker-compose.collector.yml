@@ -1,65 +1,35 @@
 version: "3.7"
 services:
-  ##Legacy Pattern
-  sflow-collector:
-    image: netsage/nfdump-collector:1.6.18
-    restart: always
-    command: sfcapd -T all -l /data -S 1 -w -z -p 9998
-    volumes:
-      - ./data/input_data/sflow:/data
-    ports:
-      - "9998:9998/udp"
-  netflow-collector:
-    image: netsage/nfdump-collector:1.6.18
-    command: nfcapd -T all -l /data -S 1 -w -z -p 9999
-    ports:
-      - "9999:9999/udp"
-    restart: always
-    volumes:
-      - ./data/input_data/netflow:/data
-  importer:
-    image: netsage/pipeline_importer:latest
-    build:
-      context: .
-      dockerfile: compose/pipeline/Dockerfile
-    env_file: .env
-    # depends_on:
-    # - rabbit
-    restart: always
-    volumes:
-      - ./data:/data
-    #      - ./userConfig/netsage_override.xml:/etc/grnoc/netsage/deidentifier/netsage_shared.xml
-    labels:
-      ofelia.enabled: "true"
-      ofelia.job-exec.dataUpdate.schedule: "@every 24h"
-      ofelia.job-exec.dataUpdate.command: "/tmp/docker_init.sh"
-  ## End Legacy
-  filebeat: ## Replacement for importer + collector
-    image: netsage/pipeline_filebeat:latest
-    env_file: .env
-    volumes:
-      - ./compose/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-  #    ports:
-  #     - "9999:9999/udp" ## netflow collector
-  nfacctd:
+  netflow_collector:
     image: pmacct/nfacctd:v1.7.5
     # command: sleep 99999
     restart: on-failure
+    depends_on:
+      - rabbit
     ports:
       - "9996:9996/udp"
-      - "179:179"
     volumes:
       - ./conf/netflow/nfacctd.conf:/etc/pmacct/nfacctd.conf
       - ./conf/netflow/pretag.map:/etc/pmacct/pretag.map
       - ./conf/netflow/ipfix.primitives.lst:/etc/pmacct/ipfix.primitives.lst
-  sfacctd:
+  sflow_collector:
     image: pmacct/sfacctd:v1.7.5
     # command: sleep 99999
-    restart: on-failure
+    # restart: on-failure
+    depends_on:
+      - rabbit
     ports:
-      - "6343:6343/udp"
-      # - "179:179"
+      - "9997:9997/udp"
     volumes:
-      - ./conf/sflow/nfacctd.conf:/etc/pmacct/sfacctd.conf
-      # - ./conf/sflow/pretag.map:/etc/pmacct/pretag.map
-      # - ./conf/sflow/ipfix.primitives.lst:/etc/pmacct/ipfix.primitives.lst
+      - ./conf/sflow/sfacctd.conf:/etc/pmacct/sfacctd.conf
+      - ./conf/sflow/pretag.map:/etc/pmacct/pretag.map
+      - ./conf/sflow/ipfix.primitives.lst:/etc/pmacct/ipfix.primitives.lst
+  rabbit:
+    image: netsage/rabbitmq:3-management
+    env_file: .env
+    volumes:
+      - ./data/rabbit:/var/lib/rabbitmq
+    ports:
+      - "15672:15672"
+      - "5671:5671"
+      - "5672:5672"
