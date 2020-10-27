@@ -1,5 +1,6 @@
 ! see https://github.com/pmacct/pmacct/blob/master/examples/pretag.map.example
 
 ! Set the sensor name as the label (arbitrary string tag)
-set_label=docker
-set_tag=2
+! TODO: this needs a wrapper to allow ENV configs
+set_label=sensor_awesomeSensor;type_netflow;instance_InstaneName
+

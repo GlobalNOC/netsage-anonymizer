@@ -1,6 +1,5 @@
 version: "3.7"
 services:
-
   rabbit:
     image: netsage/rabbitmq:3-management
     env_file: .env
@@ -29,12 +28,14 @@ services:
     env_file: .env
     external_links:
       - rabbit
-    # ports:
-    #   - "5044:5044"
     volumes:
       - ./conf-logstash:/usr/share/logstash/pipeline/
       - ./data:/data
       - ./data/cache:/var/lib/grnoc/netsage/
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.dataUpdate.schedule: "@every 24h"
+      ofelia.job-exec.dataUpdate.command: "/tmp/docker_init.sh"
   ofelia: ## Scheduler Task
     image: mcuadros/ofelia:v0.3.0
     command: daemon --docker

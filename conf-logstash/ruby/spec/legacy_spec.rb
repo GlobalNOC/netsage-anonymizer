@@ -10,38 +10,38 @@ RSpec.describe EventWrapper do
     @data = load_data("filebeat_netflow.json")
     @datav6 = @data
   end
-  it 'Event Wrapper Test' do
-    event = EventWrapper.new({'Ford' => 'Broken Car'})
-    expect(event.message['Ford']).to eq('Broken Car')
-    event.set("type", "flow")
-    expect(event.get('type')).to eq('flow')
-  end
-  it 'Give a date we should be able to convert to and from the String date' do
-    start = @data["event"]["created"]
-    expect(start).not_to eq(nil)
-    epoch = str_to_epoch(start)
-    expect(epoch).to be > 0
-    converted_date = DateTime.strptime("%s" % epoch, '%s')
-    converted_date = converted_date.strftime("%Y-%m-%dT%H:%M:%S%z")
-    offset = converted_date.index('+0000')
-
-    ## Strip off timezone data
-    expect(offset).to be > 0
-    converted_date = converted_date[0..offset - 1]
-    offset = start.index('Z')
-    start = start[0..offset - 1]
-    ## Validate Date
-    expect(converted_date[0..converted_date.index('T') - 1]).to eq(start[0..start.index('T') - 1])
-    ## Validate TS
-    result_ts = converted_date[converted_date.index('T') + 1..]
-    start_ts = start.gsub(/(.*T)(.*)/, '\2').gsub(/\.\d+/, '')
-    expect(result_ts).to eq(start_ts)
-  end
+  # it 'Event Wrapper Test' do
+  #   event = EventWrapper.new({'Ford' => 'Broken Car'})
+  #   expect(event.message['Ford']).to eq('Broken Car')
+  #   event.set("type", "flow")
+  #   expect(event.get('type')).to eq('flow')
+  # end
+  # it 'Give a date we should be able to convert to and from the String date' do
+  #   start = @data["event"]["created"]
+  #   expect(start).not_to eq(nil)
+  #   epoch = str_to_epoch(start)
+  #   expect(epoch).to be > 0
+  #   converted_date = DateTime.strptime("%s" % epoch, '%s')
+  #   converted_date = converted_date.strftime("%Y-%m-%dT%H:%M:%S%z")
+  #   offset = converted_date.index('+0000')
+  #
+  #   ## Strip off timezone data
+  #   expect(offset).to be > 0
+  #   converted_date = converted_date[0..offset - 1]
+  #   offset = start.index('Z')
+  #   start = start[0..offset - 1]
+  #   ## Validate Date
+  #   expect(converted_date[0..converted_date.index('T') - 1]).to eq(start[0..start.index('T') - 1])
+  #   ## Validate TS
+  #   result_ts = converted_date[converted_date.index('T') + 1..]
+  #   start_ts = start.gsub(/(.*T)(.*)/, '\2').gsub(/\.\d+/, '')
+  #   expect(result_ts).to eq(start_ts)
+  # end
   it 'Given Sample Data Proper conversion should occur' do
     ENV["DEBUG"] = "true"
     expect(@data).not_to eq(nil)
     #Ensure duration is not 0
-    @data["netflow"]["flow_end_sys_up_time"] = @data["netflow"]["flow_start_sys_up_time"] + 1000
+    # @data["netflow"]["flow_end_sys_up_time"] = @data["netflow"]["flow_start_sys_up_time"] + 1000
     event = EventWrapper.new(@data)
     result_event = filter(event)[0]
     puts result_event

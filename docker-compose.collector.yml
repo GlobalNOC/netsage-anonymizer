@@ -3,7 +3,7 @@ services:
   netflow_collector:
     image: pmacct/nfacctd:v1.7.5
     # command: sleep 99999
-    restart: on-failure
+    # restart: on-failure
     depends_on:
       - rabbit
     ports:
