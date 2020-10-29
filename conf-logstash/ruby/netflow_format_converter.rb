@@ -25,7 +25,6 @@ def process_netflow_data(event)
   if is_debug
     puts "Event type is %s" % event.class
   end
-  puts "Identified as netflow"
   data = event.to_hash
   clear_event(event)
 

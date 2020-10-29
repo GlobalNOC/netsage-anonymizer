@@ -13,7 +13,8 @@ COPY --chown=logstash:root compose/logstash/pipelines.yml  /usr/share/logstash/c
 COPY --chown=logstash:root compose/logstash/docker_init.sh  /tmp/
 COPY --chown=logstash:root compose/logstash/runner.sh  /tmp/
 
-USER logstash
+# USER logstash
+USER root
 
 VOLUME /data
 VOLUME /var/cache/netsage

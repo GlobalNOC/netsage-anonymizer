@@ -1,43 +1,28 @@
 #!/usr/bin/env bash
-set -e
+
+#DATA_DIR=/var/lib/grnoc/netsage/
+DATA_DIR=/data/cache/
+mkdir -p $DATA_DIR && echo "Cache directory ${DATA_DIR} created" || echo "cache dir ${DATA_DIR} already exists"
 
 FILES="GeoLite2-ASN scireg GeoLite2-City"
+CAIDA_FILES="CAIDA-org-lookup"
 
-function update() {
-    mkdir -p /data/cache/ && echo "Cache directory created" || echo "cache dir already exists"
-
+function downloadFiles() {
+    ext=$1
+    shift 1
     ## Download all files to temporary destination
-    for f in $FILES; do
-        wget --continue https://scienceregistry.grnoc.iu.edu/exported/$f.mmdb --no-use-server-timestamps -q -O /data/cache/$f.tmp
+    for f in $@; do
+        wget https://scienceregistry.grnoc.iu.edu/exported/${f}.${ext} --no-use-server-timestamps -q -O ${DATA_DIR}/$f.tmp
     done
 
     ## Rename the temporary files to replace the production ones.
-    for f in $FILES; do
-        mv /data/cache/$f.tmp /data/cache/$f.mmdb
+    for f in $@; do
+        mv ${DATA_DIR}/$f.tmp ${DATA_DIR}/${f}.${ext}
     done
-}
-
-function first_run() {
-    force_update=false
-    for f in $FILES; do
-        if test ! -f "/data/cache/$f.mmdb"; then
-            force_update=true
-            break
-        fi
-    done
-
-    if $force_update -eq "true"; then
-        update
-    else
-        echo "All files already present, skipping Science Registry download"
-    fi
 
 }
 
-if [ "$#" -gt 0 ]; then
-    ## Will check if files exist before downloading
-    first_run
-else
-    # Triggered by crontab to update the files periodically.
-    update
-fi
+echo "Download ScienceRegistry and maxmind"
+downloadFiles mmdb $FILES
+echo "Download Caida Files"
+downloadFiles csv $CAIDA_FILES
