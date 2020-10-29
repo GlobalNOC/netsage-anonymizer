@@ -4,6 +4,7 @@ services:
     image: pmacct/nfacctd:v1.7.5
     # command: sleep 99999
     # restart: on-failure
+    #network_mode: "host"
     depends_on:
       - rabbit
     ports:
@@ -27,6 +28,7 @@ services:
   rabbit:
     image: netsage/rabbitmq:3-management
     env_file: .env
+    #network_mode: "host"
     volumes:
       - ./data/rabbit:/var/lib/rabbitmq
     ports:

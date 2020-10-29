@@ -26,6 +26,8 @@ services:
   logstash:
     image: netsage/pipeline_logstash:latest
     env_file: .env
+    # entrypoint: sleep
+    # command: "999999"
     external_links:
       - rabbit
     volumes:

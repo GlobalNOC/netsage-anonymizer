@@ -11,15 +11,14 @@ input {
         host     => "${rabbitmq_input_host:localhost}"
         user     => "${rabbitmq_input_username:guest}"	        
         password => "${rabbitmq_input_pw:guest}"
-        queue    => 'poller_queue'
-        key      => 'poller_queue'
+        queue    => 'sflow_poller_queue'
+        key      => 'sflow_poller_queue'
         exchange => 'amq.direct'
         durable  => true
         connection_timeout => 10000
         subscription_retry_interval_seconds => 5
         add_field => {
-            'new_flow' => 'true'
-            '[meta][flow_type]' => 'netflow'
+            '[meta][flow_type]' => 'sflow'
         }
     }
 
