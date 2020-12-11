@@ -3,6 +3,7 @@ require 'socket'
 require 'resolv'
 
 NETFLOW = "netflow"
+SFLOW = "sflow"
 
 def is_debug
   if ENV["DEBUG"] == "true"
@@ -20,8 +21,7 @@ def clear_event(event)
   }
 end
 
-
-def process_netflow_data(event)
+def process_netflow_data(event, event_type)
   if is_debug
     puts "Event type is %s" % event.class
   end
@@ -40,7 +40,7 @@ def process_netflow_data(event)
 
   meta["sensor_id"] = data["meta"]["sensor_id"]
   meta["instance_id"] = data["meta"]["instance_id"]
-  meta["flow_type"] = NETFLOW
+  meta["flow_type"] = event_type
 
   meta["src_ip"] = data["ip_src"]
   meta["dst_ip"] = data["ip_dst"]
@@ -56,11 +56,19 @@ def process_netflow_data(event)
 
   event.set("start", data["timestamp_start"])
   event.set("end", data["timestamp_end"])
-  values["duration"] = Float(event.get("end")) - Float(event.get("start"))
+  calculate_duration = true
+
+  start_time = Float(event.get("start"))
+  end_time = Float(event.get("end"))
+  if start_time == 0.0 or end_time == 0.0
+    calculate_duration = false
+  end
 
   values["num_packets"] = data["packets"]
   values["num_bits"] = data["bytes"] * 8
-  if values["duration"] > 0
+
+  if calculate_duration
+    values["duration"] = Float(event.get("end")) - Float(event.get("start"))
     values["packets_per_second"] = Integer(values["num_packets"] / values["duration"])
     values["bits_per_second"] = Integer(values["num_bits"] / values["duration"])
   else
@@ -75,10 +83,8 @@ def process_netflow_data(event)
 end
 
 def filter(event)
-  if event.get("[meta][flow_type]") == NETFLOW
-    return process_netflow_data(event)
-    # else
-    #   return [event]
+  if event.get("[meta][flow_type]") == NETFLOW or event.get("[meta][flow_type]") == SFLOW
+    return process_netflow_data(event, event.get("[meta][flow_type]"))
   end
   [event]
 end

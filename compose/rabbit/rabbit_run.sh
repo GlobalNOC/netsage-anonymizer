@@ -20,6 +20,10 @@ function main() {
     rabbitmqadmin declare queue name=${rabbitmq_input_netflow_key} durable=true
     rabbitmqadmin declare binding source=amq.direct destination=${rabbitmq_input_netflow_key} routing_key=${rabbitmq_input_netflow_key}
 
+    echo "Creating Queue for Output named: ${rabbitmq_output_key}"
+    rabbitmqadmin declare queue name=${rabbitmq_output_key} durable=true
+    rabbitmqadmin declare binding source=amq.direct destination=${rabbitmq_output_key} routing_key=${rabbitmq_output_key}
+
     fg %1
 
 }

@@ -14,8 +14,7 @@
     "meta": {
         "flow_type": "netflow",
         "sensor_id": "awesomeSensor",
-        "instance_id": "instanceName",
-        "type": "netflow"
+        "instance_id": "instanceName"
     },
     "new_flow": "true",
     "packets": 200,

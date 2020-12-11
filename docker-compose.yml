@@ -25,10 +25,14 @@ services:
       ofelia.job-exec.dataUpdate.command: "/tmp/docker_init.sh"
   logstash:
     image: netsage/pipeline_logstash:latest
+    networks:
+      - netsage_pipeline
+    external_links:
+      - rabbit
     env_file: .env
     # entrypoint: sleep
     # command: "999999"
-    external_links:
+    depends_on:
       - rabbit
     volumes:
       - ./conf-logstash:/usr/share/logstash/pipeline/
@@ -38,6 +42,17 @@ services:
       ofelia.enabled: "true"
       ofelia.job-exec.dataUpdate.schedule: "@every 24h"
       ofelia.job-exec.dataUpdate.command: "/tmp/docker_init.sh"
+  rabbit:
+    image: netsage/rabbitmq:3-management
+    env_file: .env
+    volumes:
+      - ./data/rabbit:/var/lib/rabbitmq
+    networks:
+      - netsage_pipeline
+    ports:
+      - "15672:15672"
+      - "5671:5671"
+      - "5672:5672"
   ofelia: ## Scheduler Task
     image: mcuadros/ofelia:v0.3.0
     command: daemon --docker
@@ -45,3 +60,9 @@ services:
       - logstash
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  netsage_pipeline:
+    name: netsage_pipeline
+    # use a custom driver, with no options
+    driver: bridge
