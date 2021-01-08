@@ -326,10 +326,11 @@ sub _get_flow_data {
             if( ! $stats or ! $stats->size ) {
                 $self->logger->info("*** For $path $file, there are no stats!? skipping.");
                 next;
-            } elsif( $stats->size <= 420 ) {
-                $self->logger->debug("skipping $path $file because size is <= 420");
-                next;
-            }
+            } 
+            # elsif( $stats->size <= 420 ) {
+            #     $self->logger->debug("skipping $path $file because size is <= 420");
+            #     next;
+            # }
 
             my $rel = $abs->relative( $path ) . "";
             if ( exists ( $status->{ $rel } ) ) {
