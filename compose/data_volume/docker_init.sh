@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
+set -e 
 
 #DATA_DIR=/var/lib/grnoc/netsage/
 DATA_DIR=/data/cache/
+INPUT_DATA=/data/input_data/
 mkdir -p $DATA_DIR && echo "Cache directory ${DATA_DIR} created" || echo "cache dir ${DATA_DIR} already exists"
+mkdir -p $INPUT_DATA && echo "Importer input directory ${INPUT_DATA} created" || echo "importer input dir ${INPUT_DATA} already exists"
 
 FILES="GeoLite2-ASN scireg GeoLite2-City"
 CAIDA_FILES="CAIDA-org-lookup"
@@ -27,5 +30,10 @@ downloadFiles mmdb $FILES
 echo "Download Caida Files"
 downloadFiles csv $CAIDA_FILES
 
-echo "Creating health check"
-echo "ok" >/tmp/health
+## Used to track when bootstrap initialization is completed
+if [[ $# -ne "0" ]]; then
+    echo "Starting nginx for health checks"
+    nginx 
+else 
+    echo "Skipping opening monitoring port"
+fi

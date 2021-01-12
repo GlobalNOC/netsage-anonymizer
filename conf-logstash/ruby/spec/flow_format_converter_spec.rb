@@ -50,7 +50,7 @@ RSpec.describe EventWrapper do
     expect(result_event.get('interval')).to eq(600)
     values = result_event.get('values')
     meta = result_event.get('meta')
-    expect(values.length).to eq(4)
+    expect(values.length).to eq(5)
     expect(meta.length).to eq(12)
     expect(meta["instance_id"]).to eq("instanceName")
     expect(meta["sensor_id"]).to eq("awesomeSensor")
@@ -61,7 +61,7 @@ RSpec.describe EventWrapper do
     expect(values["num_bits"]).to eq(4640)
     expect(values["packets_per_second"]).to eq(0)
     expect(values["bits_per_second"]).to eq(0)
-    # expect(result_event.get("raw_message")).to be_truthy
+    expect(values["duration"]).to eq(0)
   end
 
   it 'Given Sample Data With 0 Duration' do

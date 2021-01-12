@@ -60,7 +60,7 @@ def process_netflow_data(event, event_type)
 
   start_time = Float(event.get("start"))
   end_time = Float(event.get("end"))
-  if start_time == 0.0 or end_time == 0.0
+  if (start_time == 0.0 or end_time == 0.0) or start_time == end_time
     calculate_duration = false
   end
 
@@ -72,6 +72,7 @@ def process_netflow_data(event, event_type)
     values["packets_per_second"] = Integer(values["num_packets"] / values["duration"])
     values["bits_per_second"] = Integer(values["num_bits"] / values["duration"])
   else
+    values["duration"] = 0
     values["packets_per_second"] = 0
     values["bits_per_second"] = 0
   end
