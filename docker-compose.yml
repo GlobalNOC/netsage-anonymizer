@@ -8,6 +8,7 @@ services:
       - netsage_pipeline
     volumes:
       - ./data:/data
+      - ./conf-logstash:/usr/share/logstash/pipeline/
     labels:
       ofelia.enabled: "true"
       ofelia.job-exec.dataUpdate.schedule: "@every 24h"
